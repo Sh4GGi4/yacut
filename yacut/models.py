@@ -33,7 +33,7 @@ class URLMap(db.Model):
         return short in RESERVED_SHORTS or URLMap.get(short) is not None
 
     @staticmethod
-    def get_unique_short():
+    def get_unique_short_id():
         for _ in range(SHORT_GENERATION_ATTEMPTS):
             short = ''.join(random.choices(SHORT_CHARS, k=SHORT_AUTO_LENGTH))
             if not URLMap.is_taken(short):
@@ -45,7 +45,7 @@ class URLMap(db.Model):
         if len(original) > ORIGINAL_MAX_LENGTH:
             raise URLMapError(LONG_ORIGINAL_MESSAGE)
         if not short:
-            short = URLMap.get_unique_short()
+            short = URLMap.get_unique_short_id()
         elif (
             len(short) > SHORT_MAX_LENGTH
             or not re.fullmatch(SHORT_PATTERN, short)
