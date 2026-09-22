@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}YaCut - страница не найдена{% endblock %}
+{% block content %}
+  <h5 class="text-center my-4">Такой страницы нет</h5>
+  <p class="text-center">
+    Возможно, короткая ссылка набрана с ошибкой.
+    <a href="{{ url_for('index_view') }}">Вернуться на главную</a>
+  </p>
+{% endblock %}
