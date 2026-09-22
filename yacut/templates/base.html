@@ -13,20 +13,7 @@
 </head>
 
 <body>
-  <header class="pb-5">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-      <div class="container">
-        <ul class="nav nav-pills">
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('index_view') }}">Главная</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('files_view') }}">Загрузка файлов</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+  {% include 'includes/header.html' %}
 
   <main>
     <section class="container my-5 px-4">
@@ -49,9 +36,7 @@
       {% endwith %}
     </section>
   </main>
-  <footer class="fixed-bottom border-top text-center py-3">
-    <p>Укоротитель ссылок YaCut</p>
-  </footer>
+  {% include 'includes/footer.html' %}
   <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 </body>
 
