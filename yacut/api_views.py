@@ -19,17 +19,18 @@ def create_id():
     if 'url' not in data:
         raise InvalidAPIUsage(URL_REQUIRED_MESSAGE)
     try:
-        url_map = URLMap.create(data['url'], data.get('custom_id'))
+        return jsonify(
+            url=data['url'],
+            short_link=URLMap.create(
+                data['url'], data.get('custom_id')
+            ).get_short_url(),
+        ), HTTPStatus.CREATED
     except URLMapError as error:
         raise InvalidAPIUsage(str(error))
-    return jsonify(
-        url=url_map.original, short_link=url_map.get_short_url()
-    ), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short>/', methods=['GET'])
 def get_url(short):
-    url_map = URLMap.get(short)
-    if url_map is None:
+    if (url_map := URLMap.get(short)) is None:
         raise InvalidAPIUsage(ID_NOT_FOUND_MESSAGE, HTTPStatus.NOT_FOUND)
     return jsonify(url=url_map.original), HTTPStatus.OK
