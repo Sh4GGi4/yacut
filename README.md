@@ -65,8 +65,8 @@ DISK_TOKEN=y0_AgAAAABc...
 
 1. Создайте приложение на [oauth.yandex.ru](https://oauth.yandex.ru/client/new/):
    платформа — «Веб-сервисы», Redirect URI — «Подставить URL для отладки».
-2. В разделе «Доступ к данным» выберите `cloud_api:disk.app_folder`
-   (доступ к папке приложения) и `cloud_api:disk.info` (сведения о Диске).
+2. В разделе «Доступ к данным» отметьте два доступа: к папке приложения
+   на Диске и к информации о Диске.
 3. Откройте ссылку `https://oauth.yandex.ru/authorize?response_type=token&client_id=<ClientID>`,
    подставив ClientID со страницы приложения, и скопируйте выданный токен
    в переменную `DISK_TOKEN`.
