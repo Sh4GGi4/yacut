@@ -8,3 +8,4 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'yacut-default-secret-key')
     DISK_TOKEN = os.getenv('DISK_TOKEN')
     DISK_API_URL = 'https://cloud-api.yandex.net/v1/'
+    DISK_UPLOAD_FOLDER = 'yacut'

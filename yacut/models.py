@@ -15,11 +15,11 @@ DUPLICATE_SHORT_MESSAGE = (
     'Предложенный вариант короткой ссылки уже существует.'
 )
 LONG_ORIGINAL_MESSAGE = (
-    f'Ссылка длиннее {ORIGINAL_MAX_LENGTH} символов'
+    f'Слишком длинная ссылка. Максимальная длина: {ORIGINAL_MAX_LENGTH}'
 )
 SHORT_GENERATION_FAILED_MESSAGE = (
-    f'Не удалось подобрать свободную короткую ссылку за '
-    f'{SHORT_GENERATION_ATTEMPTS} попыток'
+    f'Не удалось подобрать свободную короткую ссылку. '
+    f'Число попыток: {SHORT_GENERATION_ATTEMPTS}'
 )
 
 
@@ -35,12 +35,9 @@ class URLMap(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.now)
 
     @staticmethod
-    def get(short):
-        return URLMap.query.filter_by(short=short).first()
-
-    @staticmethod
-    def get_or_404(short):
-        return URLMap.query.filter_by(short=short).first_or_404()
+    def get(short, or_404=False):
+        query = URLMap.query.filter_by(short=short)
+        return query.first_or_404() if or_404 else query.first()
 
     @staticmethod
     def is_taken(short):
@@ -59,9 +56,7 @@ class URLMap(db.Model):
         """Создаёт запись. validated=True пропускает проверки формы."""
         if not validated and len(original) > ORIGINAL_MAX_LENGTH:
             raise URLMapError(LONG_ORIGINAL_MESSAGE)
-        if not short:
-            short = URLMap.get_unique_short()
-        else:
+        if short:
             if not validated and (
                 len(short) > SHORT_MAX_LENGTH
                 or not re.fullmatch(SHORT_PATTERN, short)
@@ -69,20 +64,13 @@ class URLMap(db.Model):
                 raise URLMapError(INVALID_SHORT_MESSAGE)
             if URLMap.is_taken(short):
                 raise URLMapError(DUPLICATE_SHORT_MESSAGE)
-        url_map = URLMap(original=original, short=short)
+        url_map = URLMap(
+            original=original, short=short or URLMap.get_unique_short()
+        )
         db.session.add(url_map)
         if commit:
             db.session.commit()
         return url_map
-
-    @staticmethod
-    def create_all(originals):
-        """Создаёт записи пакетом: коммит один на весь пакет."""
-        url_maps = [
-            URLMap.create(original, commit=False) for original in originals
-        ]
-        db.session.commit()
-        return url_maps
 
     def get_short_url(self):
         return url_for(REDIRECT_VIEW, short=self.short, _external=True)

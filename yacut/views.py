@@ -38,9 +38,16 @@ async def files_view():
         return render_template(FILES_TEMPLATE, form=form)
     try:
         urls = await async_upload_files_to_yandex_disk(form.files.data)
-        url_maps = URLMap.create_all(urls)
     except Exception as error:
         flash(UPLOAD_FAILED_MESSAGE.format(error=error))
+        return render_template(FILES_TEMPLATE, form=form)
+    try:
+        url_maps = [
+            URLMap.create(url, commit=(number == len(urls)))
+            for number, url in enumerate(urls, start=1)
+        ]
+    except URLMapError as error:
+        flash(str(error))
         return render_template(FILES_TEMPLATE, form=form)
     return render_template(
         FILES_TEMPLATE,
@@ -54,4 +61,4 @@ async def files_view():
 
 @app.route('/<string:short>', endpoint=REDIRECT_VIEW)
 def redirect_view(short):
-    return redirect(URLMap.get_or_404(short).original)
+    return redirect(URLMap.get(short, or_404=True).original)
